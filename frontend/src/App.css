@@ -154,3 +154,45 @@ button:hover {
 .filters input {
   margin-bottom: 0; /* Override generic input margin */
 }
+/* --- 7. Mobile Responsive Tweaks --- */
+@media (max-width: 600px) {
+  /* Stack the Navbar */
+  nav {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  nav div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  nav a,
+  nav button {
+    margin-left: 0 !important; /* Reset margin */
+    width: 100%; /* Full width buttons */
+    text-align: center;
+    padding: 10px !important; /* Bigger touch target */
+  }
+
+  /* Stack the Search and Filter bar */
+  .filters {
+    flex-direction: column;
+  }
+
+  .filters input,
+  .filters select {
+    margin-right: 0 !important;
+    width: 100%;
+  }
+
+  /* Adjust Product Grid spacing */
+  .product-list {
+    grid-template-columns: 1fr; /* 1 column only */
+    gap: 1.5rem;
+  }
+}
