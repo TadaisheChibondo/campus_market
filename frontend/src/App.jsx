@@ -1,3 +1,4 @@
+import About from "./About";
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import axios from "axios"; // <--- Don't forget this!
@@ -50,14 +51,31 @@ function App() {
         {/* Left side: Brand */}
         <Link
           to="/"
-          style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#2563eb" }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+          }}
         >
-          CampusMarket
+          {/* The Logo Image */}
+          <img
+            src="/logo.png"
+            alt="Uni Logo"
+            style={{ height: "40px", marginRight: "10px" }}
+          />
+          <span
+            style={{ fontSize: "1.5rem", fontWeight: "bold", color: "#2563eb" }}
+          >
+            CampusMarket
+          </span>
         </Link>
 
         {/* Right side: User Info & Menu */}
         <div style={{ display: "flex", alignItems: "center" }}>
           <Link to="/">Browse</Link>
+          <Link to="/about" style={{ marginLeft: "15px" }}>
+            About
+          </Link>
 
           {user ? (
             /* SHOW IF LOGGED IN */
@@ -104,6 +122,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/add-product" element={<AddProduct />} />
+        <Route path="/about" element={<About />} />
       </Routes>
     </div>
   );
