@@ -140,7 +140,7 @@ if not DEBUG:
 
 # Configure Access & Media 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  # <--- Changed from 3000 to 5173
+    "https://market-psi.vercel.app",  # <--- Changed from 3000 to 5173
 ]
 
 # Setting for uploading images
