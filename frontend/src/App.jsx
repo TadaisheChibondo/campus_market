@@ -16,8 +16,11 @@ function App() {
     const token = localStorage.getItem("token");
 
     if (token) {
+      const API_URL =
+        import.meta.env.VITE_API_URL ||
+        "https://campus-backend-75cs.onrender.com";
       axios
-        .get("http://127.0.0.1:8000/auth/users/me/", {
+        .get(`${API_URL}/api/products/?`, {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -115,7 +118,7 @@ function Home() {
   const [category, setCategory] = useState("");
 
   const fetchProducts = () => {
-    let url = "http://127.0.0.1:8000/api/products/?";
+    let url = "https://campus-backend-75cs.onrender.com/api/products/?";
     if (search) url += `search=${search}&`;
     if (category) url += `category=${category}&`;
 

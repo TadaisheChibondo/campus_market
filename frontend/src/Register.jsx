@@ -12,7 +12,7 @@ function Register() {
     e.preventDefault();
     try {
       // 1. Send the registration data to Djoser
-      await axios.post("http://127.0.0.1:8000/auth/users/", {
+      await axios.post("https://campus-backend-75cs.onrender.com/auth/users/", {
         username,
         email,
         password,

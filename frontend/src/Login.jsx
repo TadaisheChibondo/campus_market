@@ -12,7 +12,7 @@ function Login() {
     try {
       // 1. Send the username/password to Django
       const response = await axios.post(
-        "http://127.0.0.1:8000/auth/token/login/",
+        "https://campus-backend-75cs.onrender.com/auth/token/login/",
         {
           username,
           password,

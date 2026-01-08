@@ -30,12 +30,16 @@ function AddProduct() {
     const token = localStorage.getItem("token");
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/products/", formData, {
-        headers: {
-          Authorization: `Token ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      await axios.post(
+        "https://campus-backend-75cs.onrender.com/api/products/",
+        formData,
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       alert("Product added successfully!");
       navigate("/"); // Go back home to see it
