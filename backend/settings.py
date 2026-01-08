@@ -178,17 +178,18 @@ STORAGES = {
     },
 }
 
-# --- ADD THESE BACK FOR COMPATIBILITY ---
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# --- LEGACY SETTINGS (For the library check) ---
+# We use the "Non-Manifest" version to prevent crashes on missing files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# --- KEEP THE MODERN BLOCK ---
+# --- MODERN SETTINGS (For Django 5+) ---
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
 
