@@ -44,7 +44,35 @@ function App() {
     navigate("/");
     window.location.reload();
   };
+  // Add this inside your App function, above the return statement
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem("token");
 
+      if (token) {
+        try {
+          // Use the token to ask the server for user details
+          const response = await axios.get(
+            "https://campus-backend-75cs.onrender.com/auth/users/me/",
+            {
+              headers: {
+                Authorization: `Token ${token}`,
+              },
+            }
+          );
+
+          // Success! Save the user data to state
+          setUser(response.data);
+          console.log("Logged in as:", response.data.username);
+        } catch (error) {
+          console.error("Token invalid:", error);
+          localStorage.removeItem("token"); // Throw away bad token
+        }
+      }
+    };
+
+    fetchUser();
+  }, []); // <--- The empty [] means "run this once when the app starts"
   return (
     <div className="app-container">
       <nav>
