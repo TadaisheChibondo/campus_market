@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-local-key-here')
 DEBUG = 'RENDER' not in os.environ
 
 # Allow the host provided by Render, or localhost
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://campus-market-psi.vercel.app/"]
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
