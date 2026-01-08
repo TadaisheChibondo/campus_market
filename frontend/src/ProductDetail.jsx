@@ -9,7 +9,7 @@ function ProductDetail() {
   useEffect(() => {
     // Fetch the specific product using the ID
     axios
-      .get(`http://127.0.0.1:8000/api/products/${id}/`)
+      .get(`https://campus-backend-75cs.onrender.com/api/products/${id}/`)
       .then((response) => {
         setProduct(response.data);
       })
