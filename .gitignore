@@ -1,0 +1,15 @@
+# Python & Django
+__pycache__/
+*.py[cod]
+venv/
+env/
+db.sqlite3
+.DS_Store
+
+# React & Node
+node_modules/
+dist/
+.env
+
+# Media (Optional: usually we don't commit uploaded images)
+media/

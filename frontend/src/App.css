@@ -1,0 +1,156 @@
+/* --- 1. Global Reset & Fonts --- */
+:root {
+  --primary-color: #2563eb; /* Royal Blue */
+  --success-color: #16a34a; /* WhatsApp Green */
+  --bg-color: #f3f4f6; /* Light Grey Background */
+  --card-bg: #ffffff;
+  --text-main: #1f2937;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* --- 2. Navigation Bar --- */
+nav {
+  background-color: white;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between; /* Space out Home and Links */
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: #4b5563;
+  font-weight: 600;
+  margin-left: 20px;
+  transition: color 0.2s;
+}
+
+nav a:hover {
+  color: var(--primary-color);
+}
+
+/* --- 3. The Product Grid (Layout) --- */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(250px, 1fr)
+  ); /* Auto-fit cards */
+  gap: 2rem;
+  padding-bottom: 4rem;
+}
+
+/* --- 4. Product Cards --- */
+.product-card {
+  background: var(--card-bg);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+  text-decoration: none;
+  color: inherit;
+  display: flex; /* Fix for flex layout inside card */
+  flex-direction: column;
+}
+
+.product-card:hover {
+  transform: translateY(-5px); /* Lift up effect */
+}
+
+.product-card a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.product-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover; /* Crops image nicely */
+}
+
+.placeholder-img {
+  width: 100%;
+  height: 200px;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+}
+
+.product-card h3 {
+  margin: 10px 15px 5px;
+  font-size: 1.1rem;
+}
+
+.product-card p {
+  margin: 0 15px 15px;
+  color: var(--success-color);
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* --- 5. Forms (Login/Sell) --- */
+.auth-container {
+  max-width: 400px;
+  margin: 50px auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  box-sizing: border-box; /* Fixes padding issues */
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #1d4ed8;
+}
+
+/* --- 6. Filters & Search --- */
+.filters {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  gap: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filters input {
+  margin-bottom: 0; /* Override generic input margin */
+}
