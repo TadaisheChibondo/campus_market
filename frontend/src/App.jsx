@@ -1,7 +1,7 @@
 import About from "./About";
 import { useState, useEffect } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
-import axios from "axios"; // <--- Don't forget this!
+import axios from "axios";
 import ProductDetail from "./ProductDetail";
 import Login from "./Login";
 import Register from "./Register";
@@ -10,48 +10,20 @@ import "./App.css";
 
 function App() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null); // Store user info here
 
-  // Check if we are logged in AND fetch user data
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  // 1. Initialize from Memory so it doesn't flicker "Hi," on refresh
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user_data");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
 
-    if (token) {
-      const API_URL =
-        import.meta.env.VITE_API_URL ||
-        "https://campus-backend-75cs.onrender.com";
-      axios
-        .get(`${API_URL}/api/products/?`, {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        })
-        .then((response) => {
-          setUser(response.data); // Save the user info (username, email, id)
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-          // If the token is invalid/expired, clear it
-          localStorage.removeItem("token");
-          setUser(null);
-        });
-    }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    navigate("/");
-    window.location.reload();
-  };
-  // Add this inside your App function, above the return statement
+  // 2. Fetch fresh user data securely on load
   useEffect(() => {
     const fetchUser = async () => {
       const token = localStorage.getItem("token");
 
       if (token) {
         try {
-          // Use the token to ask the server for user details
           const response = await axios.get(
             "https://campus-backend-75cs.onrender.com/auth/users/me/",
             {
@@ -61,18 +33,31 @@ function App() {
             }
           );
 
-          // Success! Save the user data to state
+          // Success! Update state and save to memory
           setUser(response.data);
+          localStorage.setItem("user_data", JSON.stringify(response.data));
           console.log("Logged in as:", response.data.username);
         } catch (error) {
           console.error("Token invalid:", error);
-          localStorage.removeItem("token"); // Throw away bad token
+          // If token is bad, clear everything
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_data");
+          setUser(null);
         }
       }
     };
 
     fetchUser();
-  }, []); // <--- The empty [] means "run this once when the app starts"
+  }, []); // Run once on app start
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user_data"); // Clear memory on logout
+    setUser(null);
+    navigate("/");
+    window.location.reload();
+  };
+
   return (
     <div className="app-container">
       <nav>
@@ -85,7 +70,6 @@ function App() {
             textDecoration: "none",
           }}
         >
-          {/* The Logo Image */}
           <img
             src="/logo.png"
             alt="Uni Logo"
@@ -108,7 +92,6 @@ function App() {
           {user ? (
             /* SHOW IF LOGGED IN */
             <>
-              {/* The New User Greeting */}
               <span
                 style={{
                   marginLeft: "20px",
@@ -116,10 +99,14 @@ function App() {
                   color: "#4b5563",
                 }}
               >
-                Hi, {user.username}
+                {/* Fallback: If username is empty, show email or "Friend" */}
+                Hi, {user.username || user.email || "Friend"}
               </span>
 
-              <Link to="/add-product" style={{ color: "green" }}>
+              <Link
+                to="/add-product"
+                style={{ color: "green", marginLeft: "15px" }}
+              >
                 + Sell Item
               </Link>
               <button
@@ -129,6 +116,10 @@ function App() {
                   padding: "5px 15px",
                   width: "auto",
                   background: "#ef4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
                 }}
               >
                 Logout
@@ -137,8 +128,12 @@ function App() {
           ) : (
             /* SHOW IF LOGGED OUT */
             <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Sign Up</Link>
+              <Link to="/login" style={{ marginLeft: "15px" }}>
+                Login
+              </Link>
+              <Link to="/register" style={{ marginLeft: "15px" }}>
+                Sign Up
+              </Link>
             </>
           )}
         </div>
@@ -156,10 +151,8 @@ function App() {
   );
 }
 
-// ... Keep your Home function exactly the same ...
+// Home Component
 function Home() {
-  // ... paste your existing Home code here ...
-  // (If you deleted it, let me know and I'll provide it again)
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
@@ -181,20 +174,41 @@ function Home() {
 
   return (
     <div>
-      <h1>Campus Marketplace</h1>
+      <h1 style={{ textAlign: "center", color: "#1f2937" }}>
+        Campus Marketplace
+      </h1>
+
       {/* Search Bar */}
-      <div className="filters" style={{ marginBottom: "20px" }}>
+      <div
+        className="filters"
+        style={{
+          marginBottom: "20px",
+          display: "flex",
+          gap: "10px",
+          justifyContent: "center",
+        }}
+      >
         <input
           type="text"
           placeholder="Search products..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "8px", marginRight: "10px" }}
+          style={{
+            padding: "10px",
+            width: "100%",
+            maxWidth: "300px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
         />
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          style={{ padding: "8px" }}
+          style={{
+            padding: "10px",
+            borderRadius: "5px",
+            border: "1px solid #ccc",
+          }}
         >
           <option value="">All Categories</option>
           <option value="GROCERIES">Groceries</option>
@@ -205,17 +219,62 @@ function Home() {
         </select>
       </div>
 
-      <div className="product-list">
+      {/* Product Grid */}
+      <div
+        className="product-list"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+          gap: "20px",
+          padding: "20px",
+        }}
+      >
         {products.map((product) => (
-          <div key={product.id} className="product-card">
-            <Link to={`/product/${product.id}`}>
+          <div
+            key={product.id}
+            className="product-card"
+            style={{
+              border: "1px solid #eee",
+              padding: "10px",
+              borderRadius: "8px",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+          >
+            <Link
+              to={`/product/${product.id}`}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
               {product.image ? (
-                <img src={product.image} alt={product.name} />
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  style={{
+                    width: "100%",
+                    height: "150px",
+                    objectFit: "cover",
+                    borderRadius: "5px",
+                  }}
+                />
               ) : (
-                <div className="placeholder-img">No Image</div>
+                <div
+                  className="placeholder-img"
+                  style={{
+                    width: "100%",
+                    height: "150px",
+                    background: "#f3f4f6",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "5px",
+                  }}
+                >
+                  No Image
+                </div>
               )}
-              <h3>{product.name}</h3>
-              <p>${product.price}</p>
+              <h3 style={{ margin: "10px 0 5px" }}>{product.name}</h3>
+              <p style={{ color: "green", fontWeight: "bold" }}>
+                ${product.price}
+              </p>
             </Link>
           </div>
         ))}
