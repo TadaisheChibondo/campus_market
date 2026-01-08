@@ -21,19 +21,28 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+# In backend/urls.py
+
 def emergency_reset(request):
-    # Find the superuser (admin)
     try:
-        admin_user = User.objects.filter(is_superuser=True).first()
-        if admin_user:
-            admin_user.set_password('campus123') # <--- This will be your new password
-            admin_user.save()
-            return HttpResponse(f"Success! Password for '{admin_user.username}' is now 'campus123'")
+        # checks if user exists, if not, it creates one
+        admin_user, created = User.objects.get_or_create(username='admin')
+        
+        # Force the user to be an admin with a specific password
+        admin_user.set_password('campus123')
+        admin_user.email = 'admin@campus.com'
+        admin_user.is_staff = True
+        admin_user.is_superuser = True
+        admin_user.save()
+        
+        if created:
+            return HttpResponse("Success! Created NEW superuser 'admin' with password 'campus123'")
         else:
-            return HttpResponse("No superuser found!")
+            return HttpResponse("Success! Reset password for EXISTING 'admin' to 'campus123'")
+            
     except Exception as e:
         return HttpResponse(f"Error: {str(e)}")
-
+    
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('market.urls')),
