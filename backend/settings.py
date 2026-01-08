@@ -138,7 +138,7 @@ if not DEBUG:
     # Tell Django to copy all static files here during deployment
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     # Use Whitenoise to store them efficiently
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    
 
 # Configure Access & Media 
 CORS_ALLOWED_ORIGINS = [
@@ -146,7 +146,6 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # Setting for uploading images
-import os
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -167,4 +166,14 @@ CLOUDINARY_STORAGE = {
 }
 
 # Tell Django to use Cloudinary for uploaded media
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# Modern Django Storage Configuration
+STORAGES = {
+    # 1. Media (Images) -> Stored on Cloudinary
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    # 2. Static Files (CSS/JS) -> Served by Whitenoise
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
