@@ -184,12 +184,18 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # --- MODERN SETTINGS (For Django 5+) ---
+# --- LEGACY SETTINGS (For the library check) ---
+# Use standard Django storage (No compression, no crashes)
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# --- MODERN SETTINGS (For Django 5+) ---
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        # This is the "Safe Mode" setting
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
-
