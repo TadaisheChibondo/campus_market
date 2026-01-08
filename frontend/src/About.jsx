@@ -41,14 +41,15 @@ function About() {
         />
         <h2>Tadaishe Chibondo</h2>
         <p style={{ fontSize: "1.2rem", color: "#6b7280" }}>
-          CS Student & Full Stack Developer
+          Full Stack Developer | Tech Enthusiast | Problem Solver | Quant trader
         </p>
 
         <p
           style={{ textAlign: "center", lineHeight: "1.6", marginTop: "10px" }}
         >
-          Hi! I built <strong>CampusMarket</strong> to solve the problem of
-          buying and selling goods on our campus. This project is built using{" "}
+          Hello <strong>CampusMarket</strong> Is meant to connect Students on
+          campus and allow them to buy and sell goods, between themselves. This
+          project was developed using
           <strong>React, Django, and PostgreSQL</strong>.
         </p>
 
@@ -63,7 +64,7 @@ function About() {
         <h3>Connect with Me</h3>
         <div style={{ display: "flex", gap: "20px" }}>
           <a
-            href="#"
+            href="https://www.linkedin.com/in/tadaishe-chibondo-915247349?utm_source=share_via&utm_content=profile&utm_medium=member_android"
             style={{
               color: "#2563eb",
               textDecoration: "none",
@@ -73,7 +74,7 @@ function About() {
             LinkedIn
           </a>
           <a
-            href="#"
+            href="https://github.com/TadaisheChibondo"
             style={{
               color: "#2563eb",
               textDecoration: "none",
@@ -83,7 +84,7 @@ function About() {
             GitHub
           </a>
           <a
-            href="#"
+            href="https://tadaishe-portfolio.onrender.com/"
             style={{
               color: "#2563eb",
               textDecoration: "none",
