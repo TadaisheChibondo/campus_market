@@ -5,7 +5,7 @@ import axios from "axios";
 // Import our new modern components
 import Layout from "./Layout";
 import Home from "./Home";
-import Marketplace from "./Marketplace"; // Don't forget this import!
+import Marketplace from "./Marketplace";
 
 // Keep your existing pages
 import About from "./About";
@@ -59,13 +59,16 @@ function App() {
   return (
     <Layout user={user} handleLogout={handleLogout}>
       <Routes>
-        {/* ✅ FIXED: Only one Home route, passing the user prop */}
         <Route path="/" element={<Home user={user} />} />
 
         <Route path="/browse" element={<Marketplace />} />
         <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+
+        {/* ✅ UPDATED: Pass setUser to both Login and Register */}
+        {/* This allows them to update the app state immediately after success */}
+        <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/register" element={<Register setUser={setUser} />} />
+
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/about" element={<About />} />
         <Route path="/my-listings" element={<MyListings user={user} />} />

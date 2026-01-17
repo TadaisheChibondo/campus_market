@@ -10,7 +10,8 @@ import {
   CheckCircle,
 } from "lucide-react";
 
-function Register() {
+function Register({ setUser }) {
+  // <--- Added setUser prop so we can update App state
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -38,15 +39,44 @@ function Register() {
     }
 
     try {
+      // 1. REGISTER
       await axios.post(
         "https://campus-backend-75cs.onrender.com/auth/users/",
         formData,
       );
-      navigate("/login");
+
+      // 2. LOGIN AUTOMATICALLY
+      const loginRes = await axios.post(
+        "https://campus-backend-75cs.onrender.com/auth/token/login/",
+        {
+          username: formData.username,
+          password: formData.password,
+        },
+      );
+
+      // 3. SAVE TOKEN
+      const token = loginRes.data.auth_token;
+      localStorage.setItem("token", token);
+
+      // 4. FETCH USER DATA (To update the App state immediately)
+      const userRes = await axios.get(
+        "https://campus-backend-75cs.onrender.com/auth/users/me/",
+        {
+          headers: { Authorization: `Token ${token}` },
+        },
+      );
+
+      // Update global user state if passed, or just rely on App.jsx reloading
+      if (setUser) setUser(userRes.data);
+
+      // 5. GO TO DASHBOARD
+      navigate("/browse"); // Or wherever you want them to land
     } catch (err) {
       console.error(err);
       if (err.response && err.response.data) {
-        const firstError = Object.values(err.response.data)[0];
+        // Handle Djoser error format
+        const errorData = err.response.data;
+        const firstError = Object.values(errorData)[0];
         setError(
           Array.isArray(firstError) ? firstError[0] : "Registration failed.",
         );
