@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { ShoppingBag, Menu, X, User, LogOut, PlusCircle } from "lucide-react";
+import { ShoppingBag, Menu, X, LogOut, PlusCircle } from "lucide-react";
 import { useState } from "react";
 
 const Layout = ({ children, user, handleLogout }) => {
@@ -29,7 +29,7 @@ const Layout = ({ children, user, handleLogout }) => {
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-8">
-              <Link to="/" className={isActive("/")}>
+              <Link to="/browse" className={isActive("/browse")}>
                 Browse
               </Link>
               <Link to="/about" className={isActive("/about")}>
@@ -86,13 +86,15 @@ const Layout = ({ children, user, handleLogout }) => {
         {/* Mobile Dropdown */}
         {isMobileMenuOpen && (
           <div className="md:hidden bg-white border-b border-gray-100 p-4 space-y-4 shadow-lg">
+            {/* ✅ FIXED: Added proper styling and click handler */}
             <Link
-              to="/"
+              to="/browse"
               className="block py-2 text-gray-600"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Browse
             </Link>
+
             <Link
               to="/about"
               className="block py-2 text-gray-600"
@@ -100,6 +102,7 @@ const Layout = ({ children, user, handleLogout }) => {
             >
               About
             </Link>
+
             {user && (
               <Link
                 to="/add-product"
@@ -109,6 +112,7 @@ const Layout = ({ children, user, handleLogout }) => {
                 + Sell Item
               </Link>
             )}
+
             <div className="pt-4 border-t border-gray-100">
               {user ? (
                 <button
@@ -140,7 +144,7 @@ const Layout = ({ children, user, handleLogout }) => {
         )}
       </nav>
 
-      {/* Main Content Padding (to avoid hiding behind sticky nav) */}
+      {/* Main Content Padding */}
       <main className="pt-20 pb-10 px-4 max-w-7xl mx-auto">{children}</main>
     </div>
   );

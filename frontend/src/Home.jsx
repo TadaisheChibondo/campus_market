@@ -1,138 +1,80 @@
-import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Search, Filter, MessageCircle, ArrowRight } from "lucide-react";
-import axios from "axios";
+import { ArrowRight, ShieldCheck, Zap, Users } from "lucide-react";
 
-// Helper Component for the Product Card
-const ProductCard = ({ product }) => (
-  <div className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-300">
-    <Link to={`/product/${product.id}`} className="block relative">
-      <div className="aspect-[4/3] overflow-hidden bg-gray-100 relative">
-        {product.image ? (
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-400 bg-slate-50">
-            No Image
-          </div>
-        )}
-        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-gray-900 shadow-sm">
-          ${product.price}
-        </div>
-      </div>
-
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-800 text-lg truncate">
-          {product.name}
-        </h3>
-        <p className="text-gray-500 text-sm mt-1">
-          {product.category || "General"}
-        </p>
-      </div>
-    </Link>
-  </div>
-);
-
-// Main Home Component
 function Home() {
-  const [products, setProducts] = useState([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      setLoading(true);
-      let url = "https://campus-backend-75cs.onrender.com/api/products/?";
-      if (search) url += `search=${search}&`;
-      if (category) url += `category=${category}&`;
-
-      try {
-        const res = await axios.get(url);
-        setProducts(res.data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Debounce search slightly to avoid too many API calls
-    const timer = setTimeout(fetchProducts, 300);
-    return () => clearTimeout(timer);
-  }, [search, category]);
-
   return (
     <div>
-      {/* HERO SECTION */}
-      <section className="text-center py-12 md:py-20">
-        <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight mb-4">
-          Buy, Sell, & <span className="text-blue-600">Thrive.</span>
+      {/* 1. HERO SECTION */}
+      <section className="text-center py-20 px-4 bg-gradient-to-b from-white to-slate-50">
+        <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 tracking-tight mb-6">
+          Campus life, <span className="text-blue-600">upgraded.</span>
         </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-          The exclusive marketplace for students. Find cheap textbooks, dorm
-          gear, and snacks—all on campus.
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+          The exclusive marketplace for students. Buy cheap textbooks, sell your
+          old gear, and connect with your campus community safely.
         </p>
-      </section>
-
-      {/* SEARCH & FILTER BAR */}
-      <div className="sticky top-20 z-40 bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-sm border border-gray-100 mb-10 max-w-4xl mx-auto">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-3 text-gray-400" size={20} />
-            <input
-              type="text"
-              placeholder="Search for textbooks, noodles, sneakers..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
-            />
-          </div>
-          <div className="relative md:w-48">
-            <Filter className="absolute left-3 top-3 text-gray-400" size={20} />
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="w-full pl-10 pr-8 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none appearance-none cursor-pointer"
-            >
-              <option value="">All Categories</option>
-              <option value="GROCERIES">Groceries</option>
-              <option value="ELECTRONICS">Electronics</option>
-              <option value="CLOTHING">Clothing</option>
-              <option value="BOOKS">Books</option>
-              <option value="OTHER">Other</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      {/* PRODUCT GRID */}
-      {loading ? (
-        <div className="text-center py-20 text-gray-400 animate-pulse">
-          Loading amazing deals...
-        </div>
-      ) : products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20">
-          <p className="text-gray-500 text-lg">
-            No products found. Be the first to sell this!
-          </p>
+        <div className="flex justify-center gap-4">
           <Link
-            to="/add-product"
-            className="mt-4 inline-block text-blue-600 font-medium hover:underline"
+            to="/browse"
+            className="bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-200 flex items-center gap-2"
           >
-            List an Item &rarr;
+            Start Browsing <ArrowRight size={20} />
+          </Link>
+          <Link
+            to="/register"
+            className="bg-white text-gray-700 border border-gray-200 px-8 py-4 rounded-full font-bold text-lg hover:bg-gray-50 transition-all"
+          >
+            Join Now
           </Link>
         </div>
-      )}
+      </section>
+
+      {/* 2. FEATURES GRID */}
+      <section className="py-20 max-w-7xl mx-auto px-4">
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Feature 1 */}
+          <div className="p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
+            <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+              <ShieldCheck size={28} />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-gray-900">
+              Verified Students
+            </h3>
+            <p className="text-gray-600">
+              No strangers. Every user is verified with their student ID, making
+              transactions safer and more reliable.
+            </p>
+          </div>
+
+          {/* Feature 2 */}
+          <div className="p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
+            <div className="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mb-6">
+              <Zap size={28} />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-gray-900">
+              Instant Chat
+            </h3>
+            <p className="text-gray-600">
+              Connect directly via WhatsApp with one click. No clunky in-app
+              messaging, just fast communication.
+            </p>
+          </div>
+
+          {/* Feature 3 */}
+          <div className="p-8 rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all">
+            <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mb-6">
+              <Users size={28} />
+            </div>
+            <h3 className="text-xl font-bold mb-3 text-gray-900">
+              Community First
+            </h3>
+            <p className="text-gray-600">
+              Built for students, by students. We understand the struggle of
+              expensive textbooks and dorm life.
+            </p>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

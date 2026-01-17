@@ -12,6 +12,7 @@ import ProductDetail from "./ProductDetail";
 import Login from "./Login";
 import Register from "./Register";
 import AddProduct from "./AddProduct";
+import Marketplace from "./Marketplace";
 
 // You can probably delete App.css imports if you aren't using them anymore!
 
@@ -65,6 +66,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/about" element={<About />} />
+        <Route path="/browse" element={<Marketplace />} />
       </Routes>
     </Layout>
   );
