@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, ProductImage
+from .models import Product, ProductImage, Profile
 
 # 1. Mini serializer for the extra images
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -51,3 +51,20 @@ class ProductSerializer(serializers.ModelSerializer):
             ProductImage.objects.create(product=product, image=img)
             
         return product
+    
+
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ['phone_number', 'bio', 'profile_picture', 'seller_rating']
+
+# We can create a serializer that combines User + Profile for the "Me" endpoint
+class UserProfileSerializer(serializers.ModelSerializer):
+    profile = ProfileSerializer()
+
+    class Meta:
+        from django.contrib.auth.models import User
+        model = User
+        fields = ['id', 'username', 'email', 'profile']

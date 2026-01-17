@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings # To refer to the User model correctly
 
 class Product(models.Model):
     # Categories helps buyers filter products later
@@ -37,3 +40,40 @@ class ProductImage(models.Model):
     
     def __str__(self):
         return f"Image for {self.product.name}"
+    
+
+# Add these imports at the top
+
+
+# ... existing Product and ProductImage models ...
+
+class Profile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    phone_number = models.CharField(max_length=15, blank=True)
+    bio = models.TextField(max_length=500, blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', default='default.jpg', blank=True)
+    
+    # These fields are for the future (Reviews/Ratings)
+    seller_rating = models.FloatField(default=0.0)
+    total_reviews = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+
+# --- SIGNALS ---
+# These functions run automatically! 
+# When a User is created -> Create a Profile
+# When a User is saved -> Save the Profile
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def save_user_profile(sender, instance, **kwargs):
+    # This ensures existing users get a profile if they don't have one (Backward Compatibility)
+    try:
+        instance.profile.save()
+    except Profile.DoesNotExist:
+        Profile.objects.create(user=instance)

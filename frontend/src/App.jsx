@@ -5,6 +5,7 @@ import axios from "axios";
 // Import our new modern components
 import Layout from "./Layout";
 import Home from "./Home";
+import Marketplace from "./Marketplace"; // Don't forget this import!
 
 // Keep your existing pages
 import About from "./About";
@@ -12,14 +13,11 @@ import ProductDetail from "./ProductDetail";
 import Login from "./Login";
 import Register from "./Register";
 import AddProduct from "./AddProduct";
-import Marketplace from "./Marketplace";
-
-// You can probably delete App.css imports if you aren't using them anymore!
 
 function App() {
   const navigate = useNavigate();
 
-  // --- AUTH LOGIC (KEPT EXACTLY THE SAME) ---
+  // --- AUTH LOGIC ---
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("user_data");
     return savedUser ? JSON.parse(savedUser) : null;
@@ -54,19 +52,20 @@ function App() {
     navigate("/");
     window.location.reload();
   };
-  // -------------------------------------------
+  // ------------------
 
   return (
-    /* Wrap everything in our new Layout */
     <Layout user={user} handleLogout={handleLogout}>
       <Routes>
-        <Route path="/" element={<Home />} />
+        {/* ✅ FIXED: Only one Home route, passing the user prop */}
+        <Route path="/" element={<Home user={user} />} />
+
+        <Route path="/browse" element={<Marketplace />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/about" element={<About />} />
-        <Route path="/browse" element={<Marketplace />} />
       </Routes>
     </Layout>
   );
