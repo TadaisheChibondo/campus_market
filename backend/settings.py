@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-your-local-key-here')
 
 # If we are on Render, DEBUG will be False. Locally, it will be True.
-DEBUG = 'RENDER' not in os.environ
+DEBUG = 'TRUE' not in os.environ
 
 # Allow the host provided by Render, or localhost
 ALLOWED_HOSTS = ["https://campus-market-psi.vercel.app/", '127.0.0.1', 'localhost']
