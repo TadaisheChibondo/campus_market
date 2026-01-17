@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, ProductImage, Profile
+from .models import Product, ProductImage, Profile, MarketRequest
 
 # 1. Mini serializer for the extra images
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -68,3 +68,22 @@ class UserProfileSerializer(serializers.ModelSerializer):
         from django.contrib.auth.models import User
         model = User
         fields = ['id', 'username', 'email', 'profile']
+
+# In serializers.py
+
+# 1. New Serializer for Requests
+class MarketRequestSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source='user.username')
+    
+    class Meta:
+        model = MarketRequest
+        fields = ['id', 'username', 'title', 'description', 'budget', 'contact_phone', 'created_at']
+
+# 2. Update ProductSerializer
+class ProductSerializer(serializers.ModelSerializer):
+    # ... existing fields ...
+    
+    class Meta:
+        model = Product
+        # Add 'listing_type' to the fields list!
+        fields = ['id', 'name', 'description', 'price', 'category', 'listing_type', 'image', 'contact_phone', 'images', 'uploaded_images', 'seller', 'seller_username', 'created_at']

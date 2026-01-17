@@ -13,6 +13,8 @@ import ProductDetail from "./ProductDetail";
 import Login from "./Login";
 import Register from "./Register";
 import AddProduct from "./AddProduct";
+import MyListings from "./MyListings";
+import RequestsBoard from "./RequestsBoard";
 
 function App() {
   const navigate = useNavigate();
@@ -66,6 +68,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/add-product" element={<AddProduct />} />
         <Route path="/about" element={<About />} />
+        <Route path="/my-listings" element={<MyListings user={user} />} />
+        <Route path="/requests" element={<RequestsBoard user={user} />} />
       </Routes>
     </Layout>
   );

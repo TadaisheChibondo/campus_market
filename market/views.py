@@ -1,20 +1,17 @@
 from django.shortcuts import render
-from rest_framework import generics
-from .models import Product
-from .serializers import ProductSerializer
-from rest_framework import generics
-from django.db.models import Q # <--- Import Q for complex searches
+from rest_framework import generics, viewsets, permissions  # <--- Added viewsets, permissions
+from .models import Product, MarketRequest
+from .serializers import ProductSerializer, MarketRequestSerializer
+from django.db.models import Q 
 
-
+# --- PRODUCT VIEWS (Using Generics) ---
 class ProductListCreate(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
-    # 1. Add this method to auto-save the user
     def perform_create(self, serializer):
         serializer.save(seller=self.request.user)
 
-    # 2. Keep your get_queryset method exactly as it was (Search/Filter logic)
     def get_queryset(self):
         queryset = Product.objects.all()
         category = self.request.query_params.get('category')
@@ -27,7 +24,17 @@ class ProductListCreate(generics.ListCreateAPIView):
             )
         return queryset
 
-# this handles get one product, put (update), delete (remove) 
 class ProductDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+# --- MARKET REQUEST VIEWS (Using ViewSets) ---
+class MarketRequestViewSet(viewsets.ModelViewSet):
+    # This handles GET, POST, PUT, DELETE for requests automatically
+    queryset = MarketRequest.objects.filter(is_active=True).order_by('-created_at')
+    serializer_class = MarketRequestSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)

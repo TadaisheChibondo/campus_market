@@ -1,143 +1,24 @@
-// import { useState } from "react";
-// import axios from "axios";
-// import { useNavigate } from "react-router-dom";
-
-// function AddProduct() {
-//   const [name, setName] = useState("");
-//   const [description, setDescription] = useState("");
-//   const [price, setPrice] = useState("");
-//   const [phone, setPhone] = useState(""); // New WhatsApp state
-//   const [category, setCategory] = useState("OTHER");
-//   const [image, setImage] = useState(null);
-
-//   const navigate = useNavigate();
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//     // 1. Create a "FormData" object (Required for sending images)
-//     const formData = new FormData();
-//     formData.append("name", name);
-//     formData.append("description", description);
-//     formData.append("price", price);
-//     formData.append("contact_phone", phone); // Add the phone number
-//     formData.append("category", category);
-//     if (image) {
-//       formData.append("image", image);
-//     }
-
-//     // 2. Get the token from local storage
-//     const token = localStorage.getItem("token");
-
-//     try {
-//       await axios.post(
-//         "https://campus-backend-75cs.onrender.com/api/products/",
-//         formData,
-//         {
-//           headers: {
-//             Authorization: `Token ${token}`,
-//             "Content-Type": "multipart/form-data",
-//           },
-//         }
-//       );
-
-//       alert("Product added successfully!");
-//       navigate("/"); // Go back home to see it
-//     } catch (error) {
-//       console.error("Error adding product:", error);
-//       alert("Failed to add product");
-//     }
-//   };
-
-//   return (
-//     <div className="auth-container">
-//       <h2>Sell a Product</h2>
-//       <form onSubmit={handleSubmit}>
-//         {/* Product Name */}
-//         <div>
-//           <label>Product Name:</label>
-//           <input
-//             type="text"
-//             value={name}
-//             onChange={(e) => setName(e.target.value)}
-//             required
-//           />
-//         </div>
-
-//         {/* Price */}
-//         <div>
-//           <label>Price ($):</label>
-//           <input
-//             type="number"
-//             value={price}
-//             onChange={(e) => setPrice(e.target.value)}
-//             required
-//           />
-//         </div>
-
-//         {/* WhatsApp Number (The new field) */}
-//         <div>
-//           <label>WhatsApp Number:</label>
-//           <input
-//             type="text"
-//             placeholder="e.g. 26377123456"
-//             value={phone}
-//             onChange={(e) => setPhone(e.target.value)}
-//             required
-//           />
-//           <small style={{ display: "block", marginBottom: "10px" }}>
-//             Enter number with country code (no +)
-//           </small>
-//         </div>
-
-//         {/* Category */}
-//         <div>
-//           <label>Category:</label>
-//           <select
-//             value={category}
-//             onChange={(e) => setCategory(e.target.value)}
-//           >
-//             <option value="GROCERIES">Groceries</option>
-//             <option value="ELECTRONICS">Electronics</option>
-//             <option value="CLOTHING">Clothing</option>
-//             <option value="BOOKS">Books</option>
-//             <option value="OTHER">Other</option>
-//           </select>
-//         </div>
-
-//         {/* Description */}
-//         <div>
-//           <label>Description:</label>
-//           <textarea
-//             value={description}
-//             onChange={(e) => setDescription(e.target.value)}
-//             required
-//           />
-//         </div>
-
-//         {/* Image */}
-//         <div>
-//           <label>Image:</label>
-//           <input type="file" onChange={(e) => setImage(e.target.files[0])} />
-//         </div>
-
-//         <button type="submit">Post Item</button>
-//       </form>
-//     </div>
-//   );
-// }
-
-// export default AddProduct;
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { UploadCloud, X, Loader2, ImagePlus } from "lucide-react";
+import {
+  UploadCloud,
+  X,
+  Loader2,
+  ImagePlus,
+  Eye,
+  ShieldCheck,
+  Package,
+  Wrench,
+} from "lucide-react";
 
 const AddProduct = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // NEW: Toggle for Product vs Service
+  const [listingType, setListingType] = useState("PRODUCT"); // 'PRODUCT' or 'SERVICE'
 
   // Form State
   const [formData, setFormData] = useState({
@@ -149,10 +30,10 @@ const AddProduct = () => {
   });
 
   // Image State
-  const [mainImage, setMainImage] = useState(null); // The file object
-  const [mainPreview, setMainPreview] = useState(null); // The URL for preview
-  const [galleryImages, setGalleryImages] = useState([]); // Array of file objects
-  const [galleryPreviews, setGalleryPreviews] = useState([]); // Array of URLs
+  const [mainImage, setMainImage] = useState(null);
+  const [mainPreview, setMainPreview] = useState(null);
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [galleryPreviews, setGalleryPreviews] = useState([]);
 
   // Handle Text Inputs
   const handleChange = (e) => {
@@ -168,20 +49,16 @@ const AddProduct = () => {
     }
   };
 
-  // Handle Gallery Images (Multiple)
+  // Handle Gallery Images
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 0) {
-      // Add new files to existing ones
       setGalleryImages([...galleryImages, ...files]);
-
-      // Generate previews
       const newPreviews = files.map((file) => URL.createObjectURL(file));
       setGalleryPreviews([...galleryPreviews, ...newPreviews]);
     }
   };
 
-  // Remove a gallery image from the list
   const removeGalleryImage = (index) => {
     const updatedImages = galleryImages.filter((_, i) => i !== index);
     const updatedPreviews = galleryPreviews.filter((_, i) => i !== index);
@@ -195,7 +72,6 @@ const AddProduct = () => {
     setLoading(true);
     setError("");
 
-    // 1. Get Token
     const token = localStorage.getItem("token");
     if (!token) {
       setError("You must be logged in to sell items.");
@@ -203,7 +79,6 @@ const AddProduct = () => {
       return;
     }
 
-    // 2. Prepare Form Data
     const data = new FormData();
     data.append("name", formData.name);
     data.append("price", formData.price);
@@ -211,19 +86,16 @@ const AddProduct = () => {
     data.append("description", formData.description);
     data.append("contact_phone", formData.contact_phone);
 
-    // Append Main Image
-    if (mainImage) {
-      data.append("image", mainImage);
-    }
+    // NEW: Send the listing type to the backend
+    data.append("listing_type", listingType);
 
-    // Append Gallery Images (loop through and append with same name 'uploaded_images')
+    if (mainImage) data.append("image", mainImage);
+
     galleryImages.forEach((image) => {
       data.append("uploaded_images", image);
     });
 
     try {
-      // 3. Send to Backend
-      // NOTE: Make sure this URL matches your deployed backend
       await axios.post(
         "https://campus-backend-75cs.onrender.com/api/products/",
         data,
@@ -234,212 +106,372 @@ const AddProduct = () => {
           },
         },
       );
-
-      // Success!
       navigate("/browse");
     } catch (err) {
       console.error(err);
-      setError("Failed to create product. Please check your inputs.");
+      setError("Failed to create listing. Please check your inputs.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Sell an Item</h1>
-        <p className="text-gray-500 mb-8">
-          List your item for sale on the campus marketplace.
-        </p>
+    <div className="min-h-screen bg-slate-50 py-12 px-4">
+      <div className="max-w-6xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create New Listing
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Reach thousands of students instantly.
+          </p>
+        </div>
 
-        {error && (
-          <div className="bg-red-50 text-red-600 p-4 rounded-xl mb-6 text-sm font-medium">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Main Image Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Cover Image
-            </label>
-            <div
-              className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all ${mainPreview ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400"}`}
-            >
-              <input
-                type="file"
-                onChange={handleMainImageChange}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                accept="image/*"
-                required
-              />
-              {mainPreview ? (
-                <div className="relative h-48 w-full">
-                  <img
-                    src={mainPreview}
-                    alt="Preview"
-                    className="h-full w-full object-contain rounded-lg"
-                  />
-                  <p className="mt-2 text-sm text-blue-600 font-medium">
-                    Click to change cover
-                  </p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center text-gray-500">
-                  <UploadCloud size={40} className="mb-2 text-gray-400" />
-                  <span className="font-medium">
-                    Click to upload cover photo
-                  </span>
-                  <span className="text-xs mt-1">JPG, PNG up to 5MB</span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Gallery Images Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Additional Photos (Optional)
-            </label>
-            <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
-              {/* Upload Button */}
-              <div className="relative aspect-square border-2 border-dashed border-gray-300 rounded-xl flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-500 transition-colors">
-                <input
-                  type="file"
-                  onChange={handleGalleryChange}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  accept="image/*"
-                  multiple // Allow multiple files!
-                />
-                <ImagePlus size={24} />
-                <span className="text-xs mt-1 font-medium">Add</span>
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* LEFT COL: The Form */}
+          <div className="lg:col-span-2 space-y-6">
+            {error && (
+              <div className="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium border border-red-100">
+                {error}
               </div>
+            )}
 
-              {/* Previews */}
-              {galleryPreviews.map((src, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden group"
-                >
-                  <img
-                    src={src}
-                    alt="Gallery"
-                    className="w-full h-full object-cover"
-                  />
+            <form
+              id="sell-form"
+              onSubmit={handleSubmit}
+              className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8 space-y-8"
+            >
+              {/* 1. LISTING TYPE TOGGLE */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  What are you listing?
+                </label>
+                <div className="flex gap-4">
                   <button
                     type="button"
-                    onClick={() => removeGalleryImage(index)}
-                    className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    onClick={() => {
+                      setListingType("PRODUCT");
+                      setFormData({ ...formData, category: "" });
+                    }}
+                    className={`flex-1 py-4 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${
+                      listingType === "PRODUCT"
+                        ? "border-blue-600 bg-blue-50 text-blue-600"
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                    }`}
                   >
-                    <X size={14} />
+                    <Package size={20} /> Sell an Item
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setListingType("SERVICE");
+                      setFormData({ ...formData, category: "" });
+                    }}
+                    className={`flex-1 py-4 rounded-xl font-bold border-2 transition-all flex items-center justify-center gap-2 ${
+                      listingType === "SERVICE"
+                        ? "border-purple-600 bg-purple-50 text-purple-600"
+                        : "border-gray-200 text-gray-500 hover:border-gray-300"
+                    }`}
+                  >
+                    <Wrench size={20} /> Offer Service
                   </button>
                 </div>
-              ))}
+              </div>
+
+              {/* 2. PHOTOS */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {listingType === "PRODUCT"
+                    ? "Item Photos"
+                    : "Service Banner / Portfolio"}
+                </h3>
+
+                {/* Main Image */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Cover Image
+                  </label>
+                  <div
+                    className={`relative aspect-video border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center transition-all overflow-hidden ${mainPreview ? "border-blue-500 bg-blue-50" : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"}`}
+                  >
+                    <input
+                      type="file"
+                      onChange={handleMainImageChange}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                      accept="image/*"
+                      required
+                    />
+                    {mainPreview ? (
+                      <img
+                        src={mainPreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center text-gray-500">
+                        <UploadCloud size={32} className="mb-2 text-gray-400" />
+                        <span className="font-medium">
+                          Click to upload cover
+                        </span>
+                        <span className="text-xs mt-1">JPG, PNG up to 5MB</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Gallery Grid */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Additional Photos (Optional)
+                  </label>
+                  <div className="grid grid-cols-4 gap-3">
+                    {/* Upload Button */}
+                    <div className="relative aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-500 transition-colors">
+                      <input
+                        type="file"
+                        onChange={handleGalleryChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                        accept="image/*"
+                        multiple
+                      />
+                      <ImagePlus size={20} />
+                      <span className="text-[10px] mt-1 font-bold">ADD</span>
+                    </div>
+
+                    {/* Previews */}
+                    {galleryPreviews.map((src, index) => (
+                      <div
+                        key={index}
+                        className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden group border border-gray-200"
+                      >
+                        <img
+                          src={src}
+                          alt="Gallery"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeGalleryImage(index)}
+                          className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <hr className="border-gray-100" />
+
+              {/* 3. DETAILS */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {listingType === "PRODUCT"
+                    ? "Item Details"
+                    : "Service Details"}
+                </h3>
+
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      placeholder={
+                        listingType === "PRODUCT"
+                          ? "e.g. Calculus Textbook"
+                          : "e.g. Math Tutoring - Algebra"
+                      }
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Price ($)
+                    </label>
+                    <input
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleChange}
+                      placeholder="0.00"
+                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer"
+                    required
+                  >
+                    <option value="">Select a category</option>
+
+                    {/* DYNAMIC CATEGORIES BASED ON TOGGLE */}
+                    {listingType === "PRODUCT" ? (
+                      <>
+                        <option value="GROCERIES">Groceries</option>
+                        <option value="ELECTRONICS">Electronics</option>
+                        <option value="CLOTHING">Clothing</option>
+                        <option value="BOOKS">Books</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="RIDE">Ride / Transport</option>
+                        <option value="TUTORING">Tutoring</option>
+                        <option value="BEAUTY">Hair & Beauty</option>
+                        <option value="TECH_SUPPORT">Tech Support</option>
+                        <option value="LABOR">Manual Labor</option>
+                      </>
+                    )}
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows="4"
+                    placeholder={
+                      listingType === "PRODUCT"
+                        ? "Describe the condition, size, or reason for selling..."
+                        : "Describe your service, availability, and experience..."
+                    }
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+                    required
+                  ></textarea>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    WhatsApp Number
+                  </label>
+                  <input
+                    type="text"
+                    name="contact_phone"
+                    value={formData.contact_phone}
+                    onChange={handleChange}
+                    placeholder="e.g. 263771234567"
+                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-4 text-white rounded-xl font-bold text-lg active:scale-[0.98] transition-all shadow-lg disabled:opacity-70 flex items-center justify-center gap-2 ${
+                    listingType === "PRODUCT"
+                      ? "bg-blue-600 hover:bg-blue-700 shadow-blue-200"
+                      : "bg-purple-600 hover:bg-purple-700 shadow-purple-200"
+                  }`}
+                >
+                  {loading ? (
+                    <Loader2 className="animate-spin" />
+                  ) : listingType === "PRODUCT" ? (
+                    "Publish Listing"
+                  ) : (
+                    "Post Service"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* RIGHT COL: Live Preview & Tips (Sticky) */}
+          <div className="hidden lg:block space-y-6">
+            {/* Live Preview Card */}
+            <div className="sticky top-24">
+              <div className="flex items-center gap-2 mb-4 text-gray-900 font-semibold">
+                <Eye size={18} className="text-blue-600" /> Live Preview
+              </div>
+
+              <div className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 transform transition-all hover:scale-[1.02]">
+                <div className="aspect-[4/3] bg-gray-100 relative">
+                  {mainPreview ? (
+                    <img
+                      src={mainPreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      Image Preview
+                    </div>
+                  )}
+                  {/* Price Tag Color changes based on type */}
+                  <div
+                    className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm ${listingType === "PRODUCT" ? "bg-blue-600" : "bg-purple-600"}`}
+                  >
+                    ${formData.price || "0.00"}
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-800 text-lg truncate">
+                    {formData.name ||
+                      (listingType === "PRODUCT"
+                        ? "Item Title"
+                        : "Service Title")}
+                  </h3>
+                  <p className="text-gray-500 text-sm mt-1">
+                    {formData.category || "Category"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Tips Card */}
+              <div
+                className={`mt-6 rounded-2xl p-5 border ${listingType === "PRODUCT" ? "bg-blue-50 border-blue-100" : "bg-purple-50 border-purple-100"}`}
+              >
+                <div
+                  className={`flex items-center gap-2 font-bold mb-3 ${listingType === "PRODUCT" ? "text-blue-800" : "text-purple-800"}`}
+                >
+                  <ShieldCheck size={18} />{" "}
+                  {listingType === "PRODUCT" ? "Seller Tips" : "Service Tips"}
+                </div>
+                <ul
+                  className={`space-y-2 text-sm ${listingType === "PRODUCT" ? "text-blue-700" : "text-purple-700"}`}
+                >
+                  {listingType === "PRODUCT" ? (
+                    <>
+                      <li>• Use clear, well-lit photos.</li>
+                      <li>• Mention defects honestly.</li>
+                      <li>• Meet in public campus spots.</li>
+                    </>
+                  ) : (
+                    <>
+                      <li>• Describe your experience clearly.</li>
+                      <li>• State your availability.</li>
+                      <li>• Agree on payment before starting.</li>
+                    </>
+                  )}
+                </ul>
+              </div>
             </div>
           </div>
-
-          {/* Basic Fields */}
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Item Name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                placeholder="e.g. Calculus Textbook"
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Price ($)
-              </label>
-              <input
-                type="number"
-                name="price"
-                value={formData.price}
-                onChange={handleChange}
-                placeholder="0.00"
-                className="w-full px-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all cursor-pointer"
-              required
-            >
-              <option value="">Select a category</option>
-              <option value="GROCERIES">Groceries</option>
-              <option value="ELECTRONICS">Electronics</option>
-              <option value="CLOTHING">Clothing</option>
-              <option value="BOOKS">Books</option>
-              <option value="OTHER">Other</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description
-            </label>
-            <textarea
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              rows="4"
-              placeholder="Describe the condition, size, or reason for selling..."
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
-              required
-            ></textarea>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              WhatsApp Number
-            </label>
-            <input
-              type="text"
-              name="contact_phone"
-              value={formData.contact_phone}
-              onChange={handleChange}
-              placeholder="e.g. 263771234567"
-              className="w-full px-4 py-3 rounded-xl bg-gray-50 border-transparent focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              required
-            />
-            <p className="text-xs text-gray-500 mt-2">
-              Buyers will click this to chat with you directly.
-            </p>
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 active:scale-[0.98] transition-all shadow-lg shadow-blue-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="animate-spin" /> Publishing...
-              </>
-            ) : (
-              "List Item"
-            )}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingBag, Menu, X, LogOut, PlusCircle } from "lucide-react";
 import { useState } from "react";
+import Footer from "./Footer";
 
 const Layout = ({ children, user, handleLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -32,6 +33,12 @@ const Layout = ({ children, user, handleLogout }) => {
               <Link to="/browse" className={isActive("/browse")}>
                 Browse
               </Link>
+              <Link
+                to="/requests"
+                className="text-gray-600 hover:text-blue-600 font-medium"
+              >
+                Requests
+              </Link>
               <Link to="/about" className={isActive("/about")}>
                 About
               </Link>
@@ -46,6 +53,13 @@ const Layout = ({ children, user, handleLogout }) => {
                     className="flex items-center gap-2 text-sm font-medium text-green-600 hover:text-green-700"
                   >
                     <PlusCircle size={18} /> Sell Item
+                  </Link>
+                  {/* Inside the Desktop User Section */}
+                  <Link
+                    to="/my-listings"
+                    className="text-sm font-medium text-gray-500 hover:text-blue-600 transition-colors"
+                  >
+                    My Listings
                   </Link>
                   <button
                     onClick={handleLogout}
@@ -93,6 +107,20 @@ const Layout = ({ children, user, handleLogout }) => {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Browse
+            </Link>
+            <Link
+              to="/requests"
+              className="text-gray-600 hover:text-blue-600 font-medium"
+            >
+              Requests
+            </Link>
+            {/* Inside the Mobile Menu (logged in section) */}
+            <Link
+              to="/my-listings"
+              className="block py-2 text-gray-600"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              My Listings
             </Link>
 
             <Link
@@ -146,6 +174,7 @@ const Layout = ({ children, user, handleLogout }) => {
 
       {/* Main Content Padding */}
       <main className="pt-20 pb-10 px-4 max-w-7xl mx-auto">{children}</main>
+      <Footer />
     </div>
   );
 };
