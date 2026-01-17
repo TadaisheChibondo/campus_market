@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     # New apps i added
     'corsheaders',
     'rest_framework',
@@ -143,7 +142,11 @@ if not DEBUG:
 # Configure Access & Media 
 CORS_ALLOWED_ORIGINS = [
     "https://campus-market-psi.vercel.app", # <--- Changed from 3000 to 5173
+    "http://localhost:5173",
 ]
+
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Setting for uploading images
 MEDIA_URL = '/media/'
